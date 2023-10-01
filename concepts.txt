@@ -1,0 +1,6 @@
+------------------------------------------------------------All the new key concepts related to system calls coding,etc here-----------------------------------------------------------------------------
+
+1. Avoiding blocking of reading and writing : o_nonblock.c
+	int flags=fcntl(0,F_GETFL,0);
+	flags|=O_NONBLOCK;
+	fcntl(0,F_SETFL,flags);
