@@ -12,11 +12,10 @@
 int sfd,nsfd;
 int acceptNext=0;
 
-void avoidStdinBlocking(){
-	int flags = fcntl(0,F_GETFL,0);
+void avoidStdinBlocking(int fd){
+	int flags = fcntl(fd,F_GETFL,0);
 	flags |= O_NONBLOCK;
-	fcntl(0,F_SETFL,flags);
-	printf("Input is not blocked\n");
+	fcntl(fd,F_SETFL,flags);
 }
 
 int getSfd(int isConnected){
@@ -44,11 +43,11 @@ void bindNlisten(int* sfd){
 	address.sin_port=htons(PORT);
 	int st = bind(*sfd,(struct sockaddr* )&address,sizeof address);
 	if(st != -1){
-		printf("bind done\n");
+		//printf("bind done\n");
 	}else{
 		perror("bind");
 	}
-	listen(*sfd,3);
+	listen(*sfd,1);
 }
 
 void* sender(void* args){
@@ -69,20 +68,21 @@ void* receiver(void* args){
 	char buffer[1024];
 	while(1){
 		int sz = recv(nsfd,buffer,sizeof buffer,0);
+		buffer[sz]='\0';
 		if(!strcmp(buffer,"END\n")){
 			acceptNext=1;
 			printf("Client session terminated\n");
+			fflush(stdout);
 			break;
 		}
-		if(sz>0){
-			buffer[sz]='\0';
+		else if(sz>0){
 			printf("rcvd - %s",buffer);
 		}
 	}
 }
 
 int main(){
-	avoidStdinBlocking();
+	avoidStdinBlocking(0);
 	struct sockaddr_in clientaddr;
 	int clientaddr_len;
 	sfd=getSfd(1);
@@ -99,14 +99,12 @@ int main(){
 				pthread_t ptd[2];
 				pthread_create(&ptd[0],NULL,sender,NULL);
 				pthread_create(&ptd[1],NULL,receiver,NULL);
-				printf("waiting for threads to join\n");
 				pthread_join(ptd[0],NULL);
 				pthread_join(ptd[1],NULL);
-				close(nsfd);
-				printf("closed nsfd\n");
-			}else{
+			}if(nsfd==-1){
 				printf("nsfd error\n");
 			}
+			close(nsfd);
 		}
 	}
 }
