@@ -143,10 +143,9 @@ int main(){
 		}
 	}else{
 		close(pp[0]);
-		while(1){
-			char* msg = "Msg from p1\n";
-			write(pp[1],msg,strlen(msg));
-			sleep(10);
-		}
+		dup2(pp[1],1);
+		char* args[]={"./p1",NULL};
+		execv("./p1",args);
+		printf("Error in execv p1\n");
 	}
 }
