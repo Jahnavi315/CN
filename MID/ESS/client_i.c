@@ -24,7 +24,7 @@ int sfd;
 int shmid;
 int stop;
 
-void avoidStdinBlocking(int fd){
+void avoidBlocking(int fd){
 	int flags = fcntl(fd,F_GETFL,0);
 	flags |= O_NONBLOCK;
 	fcntl(fd,F_SETFL,flags);
@@ -136,7 +136,7 @@ void printQueue(){
 }
 
 int main(){
-	avoidStdinBlocking(0);
+	avoidBlocking(0);
 	initaliseShm();
 	signal(SIGUSR1,connectToServer);
 	signal(SIGUSR2,disconnectFromServer);

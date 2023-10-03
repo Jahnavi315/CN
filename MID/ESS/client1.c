@@ -24,7 +24,7 @@ int sfd;
 int shmid;
 int stop;
 
-void avoidStdinBlocking(int fd){
+void avoidBlocking(int fd){
 	int flags = fcntl(fd,F_GETFL,0);
 	flags |= O_NONBLOCK;
 	fcntl(fd,F_SETFL,flags);
@@ -97,10 +97,10 @@ void* receiver(void* args){
 }
 
 void connectToServer(int signo){
-	sfd=getSfd(1);
+	/*sfd=getSfd(1);
 	int status = connectSfd(&sfd);
-	stop=0;
-	if(status != -1){
+	*/stop=0;
+	//if(status != -1){
 		printf("Connected to server\n");
 		pthread_t ptd[2];
 		pthread_create(&ptd[0],NULL,sender,NULL);
@@ -108,9 +108,9 @@ void connectToServer(int signo){
 		pthread_join(ptd[0],NULL);
 		pthread_join(ptd[1],NULL);
 		fflush(stdout);
-	}else{
+	/*}else{
 		printf("connection failed\n");
-	}
+	}*/
 }
 
 void disconnectFromServer(int signo){
@@ -135,7 +135,7 @@ void printQueue(){
 }
 
 int main(){
-	avoidStdinBlocking(0);
+	avoidBlocking(0);
 	initaliseShm();
 	signal(SIGUSR1,connectToServer);
 	signal(SIGUSR2,disconnectFromServer);

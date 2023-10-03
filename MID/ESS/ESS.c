@@ -12,7 +12,7 @@
 int sfd,nsfd;
 int acceptNext=0;
 
-void avoidStdinBlocking(int fd){
+void avoidBlocking(int fd){
 	int flags = fcntl(fd,F_GETFL,0);
 	flags |= O_NONBLOCK;
 	fcntl(fd,F_SETFL,flags);
@@ -82,7 +82,7 @@ void* receiver(void* args){
 }
 
 int main(){
-	avoidStdinBlocking(0);
+	avoidBlocking(0);
 	struct sockaddr_in clientaddr;
 	int clientaddr_len;
 	sfd=getSfd(1);
@@ -104,7 +104,7 @@ int main(){
 			}if(nsfd==-1){
 				printf("nsfd error\n");
 			}
-			close(nsfd);
+			//close(nsfd);
 		}
 	}
 }
