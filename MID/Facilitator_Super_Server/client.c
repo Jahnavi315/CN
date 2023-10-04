@@ -27,18 +27,6 @@ int getSfd(int isConnected){
 	return sockfd;
 }
 
-void* sender(void* args){
-	char buffer[1024];
-	while(1){
-		int sz=read(0,buffer,sizeof buffer);
-		if(sz>0){
-			buffer[sz]='\0';
-			int serveraddr_len=sizeof serveraddr;
-			sendto(sfd,buffer,sz,0,(struct sockaddr*)&serveraddr,serveraddr_len);
-		}
-	}
-}
-
 void* dgramReceiver(void* args){
 	char buffer[1024];
 	while(1){
@@ -57,9 +45,9 @@ void* receiver(void* args){
 	while(1){
 		int sz=recv(csfd,buff,sizeof buff,0);
 		if(sz>0){
-			buff[sz]='\0';
-			printf("rcvd - %s",buff);
-			fflush(stdout);
+		buff[sz]='\0';
+		printf("rcvd - %s",buff);
+		fflush(stdout);
 		}
 	}
 }
@@ -69,10 +57,10 @@ int main(){
 	serveraddr.sin_family=AF_INET;
 	serveraddr.sin_port=htons(PORT);
 	int is=inet_pton(AF_INET,"127.0.0.1",&serveraddr.sin_addr);
-	//serveraddr.sin_addr.s_addr=IN_ADDRANY;
 	printf("Enter any key to get list of services available ");
 	fflush(stdout);
 	char buff[3];
+	char buffer[1024];
 	int sz=read(0,buff,sizeof buff);
 	if(sz>0){
 		buff[sz]='\0';
@@ -80,7 +68,7 @@ int main(){
 		sendto(sfd,buff,sz,0,(struct sockaddr*)&serveraddr,serveraddr_len);
 		pthread_t rec;
 		pthread_create(&rec,NULL,dgramReceiver,NULL);
-		printf("Which one to choose , enter the port number ");
+		printf("Enter the port number ");
 		int cport;
 		scanf("%i",&cport);
 		printf("%i",cport);
@@ -94,13 +82,7 @@ int main(){
 		}else{
 			printf("Connected to server\n");
 			pthread_t crcv;
-			int sz=recv(csfd,buff,sizeof buff,0);
-		if(sz>0){
-			buff[sz]='\0';
-			printf("rcvd - %s",buff);
-			fflush(stdout);
-		}
-			//pthread_create(&crcv,NULL,receiver,0);
+			pthread_create(&crcv,NULL,receiver,NULL);
 		}
 		while(1){}
 		

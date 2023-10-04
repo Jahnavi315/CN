@@ -15,7 +15,7 @@
 int sfd;
 struct sockaddr_in clientaddrs[100];
 
-int rfd,wfd;
+int wfd;
 
 void setSockOptions(int* sfd){
 	int option=1;
@@ -53,8 +53,7 @@ int main(){
 	struct pollfd sfdi[100];
 	pid_t pids[100];
 	int num_of_servers=0;
-	rfd=open("socket_info.txt",O_RDONLY);
-	wfd=open("socket_info.txt",O_WRONLY|O_APPEND);
+	wfd=open("socket_info.txt",O_WRONLY|O_TRUNC);
 	//input
 	struct pollfd input[1];
 	input[0].fd=0;
@@ -110,22 +109,25 @@ int main(){
 		}
 		ret=poll(sfds,1,10);
 		if(ret>0){
+			printf("Client invoked sfd\n");
 			int clientaddr_len=sizeof clientaddrs[clients];
 			sz = recvfrom(sfd,buff,sizeof buff,0,(struct sockaddr*)&clientaddrs[clients],&clientaddr_len);
 			buff[sz]='\0';
-			printf("From client %i - %s \n",clients+1,buff);
+			//printf("From client %i - %s \n",clients+1,buff);
 			clients++;
+			int rfd=open("socket_info.txt",O_RDONLY);
 			sz = read(rfd,buff,sizeof buff);
-			sendto(sfd,buff,sz,0,(struct sockaddr*)&clientaddrs[clients-1],sizeof clientaddrs[clients-1]);
-			printf("Sent socket details to client\n");
+			printf("Read %s",buff);
+			int x = sendto(sfd,buff,sz,0,(struct sockaddr*)&clientaddrs[clients-1],sizeof clientaddrs[clients-1]);
+			perror("send to ");
+			printf("Sent socket details to client - %d bytes\n",x);
+			close(rfd);
 		}
 		if(num_of_servers){
 			ret=poll(sfdi,num_of_servers,23);
 			if(ret>0){
-			printf("sthg\n");
 				for(int i=0;i<num_of_servers;i++){
 					if(sfdi[i].revents & POLLIN){
-						printf("Invoked sfdi %i \n",i);
 						fflush(stdout);
 						int st = kill(pids[i],SIGUSR1);
 						if(st != -1){
