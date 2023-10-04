@@ -16,6 +16,13 @@ void acceptClient(int signo){
 	printf("Evaluating request\n");
 	int nsfd=accept(2,NULL,0);
 	printf("Accepted client");
+	fflush(stdout);
+	char* msg="thank god\n";
+	//while(1){
+		int sz = send(2,msg,strlen(msg),0);
+		printf("sent %d bytes\n",sz);
+		fflush(stdout);
+	//}
 }
 
 int main(){

@@ -10,7 +10,7 @@
 #include<sys/poll.h>
 #include<sys/wait.h>
 #include<sys/time.h>
-#define PORT 8099
+#define PORT 8098
 
 int sfd;
 struct sockaddr_in clientaddrs[100];
@@ -45,6 +45,7 @@ int main(){
 	int clients=0;
 	sfd=socket(AF_INET,SOCK_DGRAM,0);
 	bindSocket(&sfd,0);
+	setSockOptions(&sfd);
 	struct pollfd sfds[1];
 	sfds[0].fd=sfd;
 	sfds[0].events=POLLIN;

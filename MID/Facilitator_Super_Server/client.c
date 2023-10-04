@@ -7,7 +7,7 @@
 #include<arpa/inet.h>
 #include<pthread.h>
 #include<fcntl.h>
-#define PORT 8099
+#define PORT 8098
 
 int sfd;
 int csfd;
@@ -52,11 +52,24 @@ void* dgramReceiver(void* args){
 	}
 }
 
+void* receiver(void* args){
+	char buff[1024];
+	while(1){
+		int sz=recv(csfd,buff,sizeof buff,0);
+		if(sz>0){
+			buff[sz]='\0';
+			printf("rcvd - %s",buff);
+			fflush(stdout);
+		}
+	}
+}
+
 int main(){
-	sfd=getSfd(0);
+	sfd=socket(AF_INET,SOCK_DGRAM,0);
 	serveraddr.sin_family=AF_INET;
 	serveraddr.sin_port=htons(PORT);
 	int is=inet_pton(AF_INET,"127.0.0.1",&serveraddr.sin_addr);
+	//serveraddr.sin_addr.s_addr=IN_ADDRANY;
 	printf("Enter any key to get list of services available ");
 	fflush(stdout);
 	char buff[3];
@@ -67,7 +80,6 @@ int main(){
 		sendto(sfd,buff,sz,0,(struct sockaddr*)&serveraddr,serveraddr_len);
 		pthread_t rec;
 		pthread_create(&rec,NULL,dgramReceiver,NULL);
-		//connecting to server at the choosen port
 		printf("Which one to choose , enter the port number ");
 		int cport;
 		scanf("%i",&cport);
@@ -77,13 +89,20 @@ int main(){
 		cserveraddr.sin_port=htons(cport);
 		int is=inet_pton(AF_INET,"127.0.0.1",&cserveraddr.sin_addr);
 		int st=connect(csfd,(struct sockaddr*)&cserveraddr,sizeof cserveraddr);
-			if(st == -1){
-				printf("Connection failed\n");
-			}else{
-				printf("Connected to server\n");
-				char buff[10];
-				//break;
-			}
+		if(st == -1){
+			printf("Connection failed\n");
+		}else{
+			printf("Connected to server\n");
+			pthread_t crcv;
+			int sz=recv(csfd,buff,sizeof buff,0);
+		if(sz>0){
+			buff[sz]='\0';
+			printf("rcvd - %s",buff);
+			fflush(stdout);
+		}
+			//pthread_create(&crcv,NULL,receiver,0);
+		}
 		while(1){}
+		
 	}
 }
