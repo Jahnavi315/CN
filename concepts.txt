@@ -5,3 +5,4 @@
 	flags|=O_NONBLOCK;
 	fcntl(0,F_SETFL,flags);
 2. When a handler is invoked and in the middle if someother signal invokes other handler the previous one is halted and current handler is executed after this completion only, the previous one resumes
+3. In any communication, if one ends closes ,then if other end reads, it reads EOF , so can terminate on this criteria

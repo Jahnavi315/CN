@@ -119,7 +119,7 @@ int main(){
 			sz = read(rfd,buff,sizeof buff);
 			printf("Read %s",buff);
 			int x = sendto(sfd,buff,sz,0,(struct sockaddr*)&clientaddrs[clients-1],sizeof clientaddrs[clients-1]);
-			perror("send to ");
+			//perror("send to ");
 			printf("Sent socket details to client - %d bytes\n",x);
 			close(rfd);
 		}
