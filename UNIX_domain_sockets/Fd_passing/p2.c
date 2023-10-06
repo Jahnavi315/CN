@@ -6,6 +6,7 @@
 #include<errno.h>
 #include<fcntl.h>
 #define PATH "p2address"
+#define DEST "p1address"
 
 int main(){
 	int usfd=socket(AF_UNIX,SOCK_DGRAM,0);
@@ -27,4 +28,17 @@ int main(){
 	printf("Receive: %d\n", n);
 	struct cmsghdr *c = CMSG_FIRSTHDR(&m);
 	int fd = *(int*)CMSG_DATA(c);
+	printf("fd is %i",fd);
+	char buff[1024];
+	int sz = read(fd,buff,sizeof buff);
+	perror("read ");
+	buff[sz]='\0';
+	printf("read %s \n",buff);
+	fflush(stdout);
+	struct sockaddr_un destaddr;
+	memset(&destaddr,0,sizeof destaddr);
+	destaddr.sun_family=AF_UNIX;
+	strncpy(destaddr.sun_path,DEST,sizeof destaddr.sun_path - 1);
+	sendto(usfd,buff,sz,0,(struct sockaddr*)&destaddr,sizeof destaddr);
+	perror("sendto ");
 }
