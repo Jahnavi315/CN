@@ -37,6 +37,6 @@ int main(){
 			perror("accept ");
 			break;
 		}
-		printf("Clinet disconnected\n");
+		printf("Client disconnected\n");
 	}
 }

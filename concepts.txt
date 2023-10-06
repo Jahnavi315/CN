@@ -1,8 +1,14 @@
 ------------------------------------------------------------All the new key concepts related to system calls coding,etc here-----------------------------------------------------------------------------
-
+											MID QS
 1. Avoiding blocking of reading and writing : o_nonblock.c
 	int flags=fcntl(0,F_GETFL,0);
 	flags|=O_NONBLOCK;
 	fcntl(0,F_SETFL,flags);
 2. When a handler is invoked and in the middle if someother signal invokes other handler the previous one is halted and current handler is executed after this completion only, the previous one resumes
-3. In any communication, if one ends closes ,then if other end reads, it reads EOF , so can terminate on this criteria
+											UNIX DOMAIN
+3. In SOCK_STREAM type if one ends closes ,then if other end reads, it reads EOF , so can terminate on this criteria
+but in SOCK_DRAM its not this way!!
+DBT : HOW SOCK_DGRAM TYPE BEHAVE IF CLIENT IS CLOSED??
+ALSO SEE ABT HOW CLOSING FDS OR SFD EFFECT THE COMMUNICATION (any type)
+4. If server wants to send msg to client client should also be binded (DGRAM sockets)
+
