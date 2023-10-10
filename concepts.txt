@@ -5,10 +5,33 @@
 	flags|=O_NONBLOCK;
 	fcntl(0,F_SETFL,flags);
 2. When a handler is invoked and in the middle if someother signal invokes other handler the previous one is halted and current handler is executed after this completion only, the previous one resumes
+											
 											UNIX DOMAIN
 3. In SOCK_STREAM type if one ends closes ,then if other end reads, it reads EOF , so can terminate on this criteria
-but in SOCK_DRAM its not this way!!
-DBT : HOW SOCK_DGRAM TYPE BEHAVE IF CLIENT IS CLOSED??
-ALSO SEE ABT HOW CLOSING FDS OR SFD EFFECT THE COMMUNICATION (any type)
+ but in SOCK_DRAM its not this way!!
+ DBT : HOW SOCK_DGRAM TYPE BEHAVE IF CLIENT IS CLOSED??
+ ALSO SEE ABT HOW CLOSING FDS OR SFD EFFECT THE COMMUNICATION (any type)
 4. If server wants to send msg to client client should also be binded (DGRAM sockets)
-
+									 	
+									 	TESTING LISTEN AND ACCEPT
+5. OBSERVED RESULTS
+ Single server : queue size = backlog + 1
+ Running 2 servers : Queue Max size = (backlog + 1)*2
+ TRY : Different backlogs given as cmd line args , more than 2 servers behaviour 
+ NOTE - chatgpt : The actual size of the queue depends on various factors, including the operating system and network implementation. In some cases, the system may use a value slightly larger than  
+ backlog for internal reasons, but it's not a straightforward "backlog + 1" relationship. The exact behavior can vary between different systems and network configurations.
+										
+											SELECT
+6. maximum number of fds in an fd_set structure is the value of the macro FD_SETSIZE and select() can monitor only fds numbers that are less than FD_SETSIZE
+7. Ready to write means it doesnt block small write but may block large writes.
+8. select returns number of fds that are ready..also if interrupted by a signal the select call will return immediately with num of fds ready.
+9. DOnt forget to reinitalise the fd set and timeout coz fd sets and timeout are modified after select, timeout->timeout is modified coz waitig time is subtracted from the timeout
+ **It may subtract from the timeout the amount of time it actually spent waiting (or "slept") for file descriptors to become ready. This means that after select() returns, the timeout variable may have 
+ a smaller value than what you originally set, reflecting the time that select() spent waiting.
+10. select cant monitor fds no. >1023
+11. **According to POSIX, select() should check all specified file descriptors in the three file descriptor sets, up to the limit nfds-1.  However, the current implementation ignores any file descriptor in these sets that is greater than the maximum file descriptor number that the process currently has open.  According to POSIX, any such file descriptor that is specified in one of the sets should result in the error EBADF
+12. POLL vs SELECT : 
+ for fifo if other end is closed : select repeatedly reports ready but poll - After the EOF is encountered and the read end is marked as "ready" by poll(), it will not repeatedly 
+ report the read end as "ready." Instead, it will report the read end as "ready" once, and if you read from it and get 0 bytes (indicating EOF), poll() won't report it as "ready" again unless more data 
+ is written to the FIFO.
+ for STREAM SOCKETS : both show them ready for reading always ?chatgpt
