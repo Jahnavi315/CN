@@ -41,8 +41,8 @@ void recv_fd_stream(int* usfd,int* recvFd){
 	strncpy(serveraddr.sun_path,SERVER,sizeof serveraddr.sun_path - 1);
 	int st=connect(*usfd,(struct sockaddr*)&serveraddr,sizeof serveraddr);
 	perror("connect ");
-	char buf[512];
-	struct iovec e = {NULL,0};//{buf, 512};
+	char buff[512];
+	struct iovec e = {buff, 512};
 	char cmsg[CMSG_SPACE(sizeof(int))];
 	struct msghdr m = {NULL, 0, &e, 1, cmsg, sizeof(cmsg), 0};
 	int n = recvmsg(*usfd, &m, 0);
@@ -51,6 +51,7 @@ void recv_fd_stream(int* usfd,int* recvFd){
 	*recvFd = *(int*)CMSG_DATA(c);
 	printf("recvFd is %i \n",*recvFd);
 	fflush(stdout);
+	printf("Data recvd is %s\n",buff);
 }
 
 int main(){
