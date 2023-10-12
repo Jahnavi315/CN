@@ -96,6 +96,8 @@ void* receiver(void* args){
 }
 
 void connectToServer(int signo){
+	printf("invoked connectToServer\n");
+	fflush(stdout);
 	sfd=getSfd(1);
 	int status = connectSfd(&sfd);
 	stop=0;
@@ -123,6 +125,7 @@ void disconnectFromServer(int signo){
 	sleep(2);
 	kill(shmptr->agreement[shmptr->curr],SIGUSR1);
 	printf("Disconnected from server\n");
+	close(sfd);
 }
 
 void printQueue(){
