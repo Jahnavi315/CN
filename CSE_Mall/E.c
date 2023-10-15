@@ -29,6 +29,7 @@
 int usfd;
 int fd_usfd;
 int clients=0;
+int nsfds[CAPACITY];
 struct sockaddr_un destaddr;
 
 void* sender(void* args){
@@ -38,7 +39,7 @@ void* sender(void* args){
 	int count=1;
 	fflush(stdout);
 	while(1){
-		sleep(7);
+		sleep(3);
 		char text[20];
 		snprintf(text,sizeof text,"%s %i",msg,count);
 		int st = send(nsfd,text,strlen(text),0);
@@ -46,7 +47,7 @@ void* sender(void* args){
 			perror("send ");
 		}
 		count++;
-		sleep(8);
+		sleep(5);
 	}
 }
 
@@ -62,6 +63,26 @@ void* receiver(void* args){
 			buffer[sz]='\0';
 			printf("rcvd : %s\n",buffer);
 			fflush(stdout);
+		}
+	}
+}
+
+void* newScreenings(void* args){
+	char buff[100];
+	while(1){
+		int sz = read(0,buff,sizeof buff);
+		buff[sz]='\0';
+		char* text = "New Screening - ";
+		char msg[200];
+		snprintf(msg,sizeof msg,"%s %s",text,buff);
+		sleep(1);
+		for(int i=0;i<clients && i<CAPACITY;i++){
+			int st = send(nsfds[i],msg,strlen(msg),0);
+			if(st < 0){
+				printf("%i %i client\n",i,nsfds[i]);
+				fflush(stdout);
+				perror("send ");
+			}
 		}
 	}
 }
@@ -94,11 +115,13 @@ void* recv_fd_dgram(void* args){
 				perror("sendto ");
 			}
 			if(clients == CAPACITY){
+				nsfds[clients - 1]=dup(recvFd);
 				pthread_t ptd[2];
 				pthread_create(&ptd[0],NULL,sender,&recvFd);
 				pthread_create(&ptd[1],NULL,receiver,&recvFd);
 			}
 		}else{
+			nsfds[clients - 1]=dup(recvFd);
 			pthread_t ptd[2];
 			pthread_create(&ptd[0],NULL,sender,&recvFd);
 			pthread_create(&ptd[1],NULL,receiver,&recvFd);
@@ -159,6 +182,10 @@ int main(){
 	pthread_t rcvfd;
 	pthread_create(&rcvfd,NULL,recv_fd_dgram,NULL);
 	
+	//creating thread for sending new screenings
+	pthread_t newSc;
+	pthread_create(&newSc,NULL,newScreenings,NULL);
+	
 	while(1){
 		int nsfd = accept(sfd,NULL,NULL);
 		if(nsfd<0){
@@ -192,6 +219,7 @@ int main(){
 					perror("sendto ");
 				}
 				if(clients == CAPACITY){
+					nsfds[clients - 1]=nsfd;
 					st = send(nsfd,buff,strlen(buff),0);
 					if(st < 0){
 						perror("send ");
@@ -203,6 +231,7 @@ int main(){
 					pthread_create(&ptd[1],NULL,receiver,&nsfd);
 				}
 			}else{
+				nsfds[clients - 1]=dup(nsfd);
 				st = send(nsfd,buff,strlen(buff),0);
 				if(st < 0){
 					perror("send ");
