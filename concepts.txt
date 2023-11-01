@@ -1,5 +1,6 @@
 ------------------------------------------------------------All the new key concepts related to system calls coding,etc here-----------------------------------------------------------------------------
 											MID QS
+											
 1. Avoiding blocking of reading and writing : o_nonblock.c
 	int flags=fcntl(0,F_GETFL,0);
 	flags|=O_NONBLOCK;
@@ -7,6 +8,7 @@
 2. When a handler is invoked and in the middle if someother signal invokes other handler the previous one is halted and current handler is executed after this completion only, the previous one resumes
 											
 											UNIX DOMAIN
+											
 3. In SOCK_STREAM type if one ends closes ,then if other end reads, it reads EOF , so can terminate on this criteria
  but in SOCK_DRAM its not this way!!
  DBT : HOW SOCK_DGRAM TYPE BEHAVE IF CLIENT IS CLOSED??
@@ -14,6 +16,7 @@
 4. If server wants to send msg to client client should also be binded (DGRAM sockets)
 									 	
 									 	TESTING LISTEN AND ACCEPT
+									 	
 5. OBSERVED RESULTS
  Single server : queue size = backlog + 1
  Running 2 servers : Queue Max size = (backlog + 1)*2
@@ -22,6 +25,7 @@
  backlog for internal reasons, but it's not a straightforward "backlog + 1" relationship. The exact behavior can vary between different systems and network configurations.
 										
 											SELECT
+											
 6. maximum number of fds in an fd_set structure is the value of the macro FD_SETSIZE and select() can monitor only fds numbers that are less than FD_SETSIZE
 7. Ready to write means it doesnt block small write but may block large writes.
 8. select returns number of fds that are ready..also if interrupted by a signal the select call will return immediately with num of fds ready.
