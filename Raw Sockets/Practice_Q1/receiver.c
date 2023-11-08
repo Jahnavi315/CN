@@ -7,6 +7,7 @@
 #include<arpa/inet.h>
 #include<string.h>
 #include<linux/ip.h>
+#include<pthread.h>
 
 void printIpHdr(struct iphdr* ip){
 
@@ -30,22 +31,44 @@ void printIpHdr(struct iphdr* ip){
 
 }
 
-int main(){
-	int sfd = socket(AF_INET,SOCK_RAW,25);
-	if(sfd == -1){
-		perror("socket ");
-	}
+void* rcvr(void* args){
+	int sfd = *(int*)args;
+	printf("Ready to receive on %d\n",sfd);
 	char buff[65536];
-	memset(buff,0,sizeof buff);
-	int sz = recvfrom(sfd,buff,sizeof buff,0,NULL,NULL);
-	if(sz == -1){
-		perror("recvfrom ");
+	while(1){
+		memset(buff,0,sizeof buff);
+		int sz = recvfrom(sfd,buff,sizeof buff,0,NULL,NULL);
+		if(sz == -1){
+			perror("recvfrom ");
+		}
+		else{
+			printf("rcvd %d bytes\n",sz);
+			struct iphdr* ip;
+			ip = (struct iphdr*)buff;
+			printf("rcvd IP packet on %i\n",sfd);
+			printIpHdr(ip);
+		}
 	}
-	else{
-		printf("rcvd %d bytes\n",sz);
-		struct iphdr* ip;
-		ip = (struct iphdr*)buff;
-		printIpHdr(ip);
+	
+}
+
+int main(){
+	printf("Enter the number of protocols : ");
+	int n;
+	scanf("%d",&n);
+	printf("Enter the protocols now : ");
+	int proto[n];
+	int sfds[n];
+	for(int i = 0;i<n;i++){
+		scanf("%d",&proto[i]);
+		sfd[i] = socket(AF_INET,SOCK_RAW,proto[i]);
+		if(sfd[i] == -1){
+			perror("socket ");
+		}else{
+			pthread_t rcvr_thread;
+			pthread_create(&rcvr_thread,NULL,rcvr,&sfd[i]);
+		}
+		
 	}
 	
 	while(1){}
