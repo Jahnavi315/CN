@@ -1,0 +1,159 @@
+	|rcvd 60 bytes
+
+IP HEADER
+	|-Version : 4
+	|-Internet Header Length : 5 DWORDS or 20 Bytes
+ 	|-Type Of Service : 0
+ 	|-Total Length : 60 Bytes
+ 	|-Identification : 10389
+ 	|-Time To Live : 64
+ 	|-Protocol : 6
+ 	|-Header Checksum : 5157
+ 	|-Source IP : 127.0.0.1
+ 	|-Destination IP : 127.0.0.1
+ 
+TCP HEADER
+	|-Source Port      : 45272
+	|-Destination Port : 8080
+	|-Sequence Number    : 2490976848
+	|-Acknowledge Number : 0
+	|-Header Length      : 10 DWORDS or 40 BYTES
+	|-Urgent Flag          : 0
+	|-Acknowledgement Flag : 0
+	|-Push Flag            : 0
+	|-Reset Flag           : 0
+	|-Synchronise Flag     : 1
+	|-Finish Flag          : 0
+	|-Window         : 65495
+	|-Checksum       : 65072
+	|-Urgent Pointer : 0
+	-Data Rcvd : 
+
+-------------------------------------------------
+	|rcvd 60 bytes
+
+IP HEADER
+	|-Version : 4
+	|-Internet Header Length : 5 DWORDS or 20 Bytes
+ 	|-Type Of Service : 0
+ 	|-Total Length : 60 Bytes
+ 	|-Identification : 0
+ 	|-Time To Live : 64
+ 	|-Protocol : 6
+ 	|-Header Checksum : 15546
+ 	|-Source IP : 127.0.0.1
+ 	|-Destination IP : 127.0.0.1
+ 
+TCP HEADER
+	|-Source Port      : 8080
+	|-Destination Port : 45272
+	|-Sequence Number    : 3485454762
+	|-Acknowledge Number : 2490976849
+	|-Header Length      : 10 DWORDS or 40 BYTES
+	|-Urgent Flag          : 0
+	|-Acknowledgement Flag : 1
+	|-Push Flag            : 0
+	|-Reset Flag           : 0
+	|-Synchronise Flag     : 1
+	|-Finish Flag          : 0
+	|-Window         : 65483
+	|-Checksum       : 65072
+	|-Urgent Pointer : 0
+	-Data Rcvd : 
+
+-------------------------------------------------
+	|rcvd 52 bytes
+
+IP HEADER
+	|-Version : 4
+	|-Internet Header Length : 5 DWORDS or 20 Bytes
+ 	|-Type Of Service : 0
+ 	|-Total Length : 52 Bytes
+ 	|-Identification : 10390
+ 	|-Time To Live : 64
+ 	|-Protocol : 6
+ 	|-Header Checksum : 5164
+ 	|-Source IP : 127.0.0.1
+ 	|-Destination IP : 127.0.0.1
+ 
+TCP HEADER
+	|-Source Port      : 45272
+	|-Destination Port : 8080
+	|-Sequence Number    : 2490976849
+	|-Acknowledge Number : 3485454763
+	|-Header Length      : 8 DWORDS or 32 BYTES
+	|-Urgent Flag          : 0
+	|-Acknowledgement Flag : 1
+	|-Push Flag            : 0
+	|-Reset Flag           : 0
+	|-Synchronise Flag     : 0
+	|-Finish Flag          : 0
+	|-Window         : 512
+	|-Checksum       : 65064
+	|-Urgent Pointer : 0
+	-Data Rcvd : 
+
+-------------------------------------------------
+	|rcvd 55 bytes
+
+IP HEADER
+	|-Version : 4
+	|-Internet Header Length : 5 DWORDS or 20 Bytes
+ 	|-Type Of Service : 0
+ 	|-Total Length : 55 Bytes
+ 	|-Identification : 10391
+ 	|-Time To Live : 64
+ 	|-Protocol : 6
+ 	|-Header Checksum : 5160
+ 	|-Source IP : 127.0.0.1
+ 	|-Destination IP : 127.0.0.1
+ 
+TCP HEADER
+	|-Source Port      : 45272
+	|-Destination Port : 8080
+	|-Sequence Number    : 2490976849
+	|-Acknowledge Number : 3485454763
+	|-Header Length      : 8 DWORDS or 32 BYTES
+	|-Urgent Flag          : 0
+	|-Acknowledgement Flag : 1
+	|-Push Flag            : 1
+	|-Reset Flag           : 0
+	|-Synchronise Flag     : 0
+	|-Finish Flag          : 0
+	|-Window         : 512
+	|-Checksum       : 65067
+	|-Urgent Pointer : 0
+	-Data Rcvd : hy
+68790a
+
+-------------------------------------------------
+	|rcvd 52 bytes
+
+IP HEADER
+	|-Version : 4
+	|-Internet Header Length : 5 DWORDS or 20 Bytes
+ 	|-Type Of Service : 0
+ 	|-Total Length : 52 Bytes
+ 	|-Identification : 30141
+ 	|-Time To Live : 64
+ 	|-Protocol : 6
+ 	|-Header Checksum : 50948
+ 	|-Source IP : 127.0.0.1
+ 	|-Destination IP : 127.0.0.1
+ 
+TCP HEADER
+	|-Source Port      : 8080
+	|-Destination Port : 45272
+	|-Sequence Number    : 3485454763
+	|-Acknowledge Number : 2490976852
+	|-Header Length      : 8 DWORDS or 32 BYTES
+	|-Urgent Flag          : 0
+	|-Acknowledgement Flag : 1
+	|-Push Flag            : 0
+	|-Reset Flag           : 0
+	|-Synchronise Flag     : 0
+	|-Finish Flag          : 0
+	|-Window         : 512
+	|-Checksum       : 65064
+	|-Urgent Pointer : 0
+	-Data Rcvd : 

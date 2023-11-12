@@ -39,3 +39,28 @@
  report the read end as "ready." Instead, it will report the read end as "ready" once, and if you read from it and get 0 bytes (indicating EOF), poll() won't report it as "ready" again unless more data 
  is written to the FIFO.
  for STREAM SOCKETS : both show them ready for reading always ?chatgpt
+ 
+ 										      RAW SOCKETS
+ 										      
+13. When sending nrml data through raw socket with udp protocol, and recvng it with a raw socket we will not have udp hdr coz we didnt manually create it in the sender code if its manually created then we can print, also can use sock_dgram so networking stack itself creates one for us and hence we can see the udp header.
+14. "enp0s3" typically refers to the Ethernet interface with index 0 in slot 3 on your system. 
+"en" stands for Ethernet.
+"p" stands for physical.
+"0" is the index number of the interface on your system.
+"s3" stands for the slot or location of the interface on your system. In this case, it's slot 3.
+15. ifreq is 'interface request', "SIOCGIFINDEX" stands for "Socket I/O Control Get Interface Index."
+ 										      
+ 										      
+ 										      
+ 										      
+ 										      
+ 										      
+ 										      
+ 										      
+ 										      
+ 										      
+ 										      
+ 										      
+ 										      
+ 										      
+ 										      

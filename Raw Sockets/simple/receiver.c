@@ -9,22 +9,41 @@
 #include<linux/ip.h>
 #include<linux/tcp.h>
 #include<linux/udp.h>
+#include<locale.h>
+#include<wchar.h>
 
-void printUdpHdr(struct udphdr* udp,char* buff,int iphdrlen){
+void printUdpHdr(struct udphdr* udp){
 
-	printf("\n************UDP HEADER************\n");
+	printf("\nUDP HEADER\n");
 	printf("\t|-Source Port : %d\n" , ntohs(udp->source));
 	printf("\t|-Destination Port : %d\n", ntohs(udp->dest));
 	printf("\t|-UDP Length : %d\n" , ntohs(udp->len));
 	printf("\t|-UDP Checksum : %d\n" , ntohs(udp->check));
-	char* data = buff + iphdrlen + (sizeof (struct udphdr));
-	printf("\t|-Data Rcvd : %s\n",data);
+}
+
+void printTcpHdr(struct tcphdr* tcp){
+	
+    	printf("\nTCP HEADER\n");
+    	printf("\t|-Source Port      : %u\n",ntohs(tcp->source));
+    	printf("\t|-Destination Port : %u\n",ntohs(tcp->dest));
+    	printf("\t|-Sequence Number    : %u\n",ntohl(tcp->seq));
+    	printf("\t|-Acknowledge Number : %u\n",ntohl(tcp->ack_seq));
+    	printf("\t|-Header Length      : %d DWORDS or %d BYTES\n" ,(unsigned int)tcp->doff,(unsigned int)tcp->doff*4);
+    	printf("\t|-Urgent Flag          : %d\n",(unsigned int)tcp->urg);
+    	printf("\t|-Acknowledgement Flag : %d\n",(unsigned int)tcp->ack);
+    	printf("\t|-Push Flag            : %d\n",(unsigned int)tcp->psh);
+    	printf("\t|-Reset Flag           : %d\n",(unsigned int)tcp->rst);
+    	printf("\t|-Synchronise Flag     : %d\n",(unsigned int)tcp->syn);
+    	printf("\t|-Finish Flag          : %d\n",(unsigned int)tcp->fin);
+    	printf("\t|-Window         : %d\n",ntohs(tcp->window));
+    	printf("\t|-Checksum       : %d\n",ntohs(tcp->check));
+    	printf("\t|-Urgent Pointer : %d\n",tcp->urg_ptr);
+        
 }
 
 void printIpHdr(struct iphdr* ip,char* buff){
 
-	printf("\n************IP HEADER************\n");
-	unsigned short iphdrlen;
+	printf("\nIP HEADER\n");
 	struct sockaddr_in source,dest;
 	memset(&source, 0, sizeof(source));
 	source.sin_addr.s_addr = ip->saddr;
@@ -41,20 +60,44 @@ void printIpHdr(struct iphdr* ip,char* buff){
 	printf("\t|-Source IP : %s\n ", inet_ntoa(source.sin_addr));
 	printf("\t|-Destination IP : %s\n ",inet_ntoa(dest.sin_addr));
 	fflush(stdout);
+	
+	unsigned int iphdrlen = (((unsigned int)(ip->ihl))*4);
+	
 	if((unsigned int)ip->protocol == 17){
+	
 		struct udphdr* udp;
-		int iphdrlen = (((unsigned int)(ip->ihl))*4);
 		udp = (struct udphdr*)(buff + iphdrlen);
-		printUdpHdr(udp,buff,iphdrlen);
+		printUdpHdr(udp);
+		char* data = buff + iphdrlen + sizeof(struct udphdr);
+		printf("\t|-Data size : %li\n",strlen(data));
+		printf("\t|-Data Rcvd : %s\n",data);
+		
+	}else if((unsigned int)ip->protocol == 6){
+	
+		struct tcphdr* tcp;
+		tcp = (struct tcphdr*)(buff + iphdrlen);
+		printTcpHdr(tcp);
+		char* data = buff + iphdrlen + tcp->doff*4;
+		printf("\t|-Data size : %li\n",strlen(data));
+		printf("\t|-Data Rcvd : %s",data);
+		/*for(int i=0;data[i]!='\0';i++){
+			printf("%.2x",data[i]);
+		}*/
+		printf("\n");
+		fflush(stdout);
+		
 	}else{
-		char* data = buff + (((unsigned int)(ip->ihl))*4);
+		char* data = buff + iphdrlen;
 		//must not use ip to get data pointer
 		printf("\t|-Data Rcvd : %s\n",data);
 	}
 	
+	printf("\n-------------------------------------------------\n");
+	
 }
 
 int main(){
+	
 	int protocol;
 	scanf("%i",&protocol);
 	int sfd = socket(AF_INET,SOCK_RAW,protocol);
@@ -62,18 +105,19 @@ int main(){
 		perror("socket ");
 	}
 	char buff[65536];
-	memset(buff,0,sizeof buff);
-	int sz = recvfrom(sfd,buff,sizeof buff,0,NULL,NULL);
-	if(sz == -1){
-		perror("recvfrom ");
+	while(1){
+		memset(buff,0,sizeof buff);
+		int sz = recvfrom(sfd,buff,sizeof buff,0,NULL,NULL);
+		if(sz == -1){
+			perror("recvfrom ");
+		}
+		else{
+			printf("\t|rcvd %d bytes\n",sz);
+			fflush(stdout);
+			struct iphdr* ip;
+			ip = (struct iphdr*)buff;
+			printIpHdr(ip,buff);
+		}
 	}
-	else{
-		printf("\t|rcvd %d bytes\n",sz);
-		fflush(stdout);
-		struct iphdr* ip;
-		ip = (struct iphdr*)buff;
-		printIpHdr(ip,buff);
-	}
-	
-	while(1){}
+	//while(1){}
 }
