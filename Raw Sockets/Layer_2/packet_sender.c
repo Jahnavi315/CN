@@ -1,11 +1,22 @@
 #include<stdio.h>
-#include<sys/socket.h>
-#include<arpa/inet.h>
-#include<linux/if_ether.h>
-#include<string.h>
+#include<sys/socket.h>	//socket()
+#include<arpa/inet.h>	//IPPROTO_RAW
+#include<string.h>	//memset
+#include<net/if.h>	//if_req
 #include<linux/ip.h>
 #include<linux/tcp.h>
 #include<linux/udp.h>
+#include<linux/sockios.h>
+#include<sys/ioctl.h>
+#include<linux/if_ether.h>
+#include<netinet/ether.h>
+#include<linux/if_packet.h>
+#include<sys/wait.h>
+#include<unistd.h>
+
+
+int sfd;
+
 
 void printUdpHdr(struct udphdr* udp){
 
@@ -93,19 +104,133 @@ void printPacket(char* buff){
 	}
 }
 
-int main(){
-	int sfd = socket(AF_PACKET,SOCK_RAW,htons(ETH_P_IP));
-	if(sfd == -1){
-		perror("socket ");
+unsigned short checksum(unsigned short* buff, int _16bitword)
+{
+	unsigned long sum;
+	for(sum=0;_16bitword>0;_16bitword--)
+	sum+=htons(*(buff)++);
+	sum = ((sum >> 16) + (sum & 0xFFFF));
+	sum += (sum>>16);
+	return (unsigned short)(~sum);
+}
+
+void sendPacket(char* buff){
+
+	int total_len = 0;
+
+	struct ifreq if_req1,if_req2,if_req3;
+	memset(&if_req1,0,sizeof if_req1);
+	memset(&if_req2,0,sizeof if_req2);
+	memset(&if_req3,0,sizeof if_req3);
+	
+	char* interface_name = "lo";
+	strncpy(if_req1.ifr_name,interface_name,IFNAMSIZ - 1);
+	strncpy(if_req2.ifr_name,interface_name,IFNAMSIZ - 1);
+	strncpy(if_req3.ifr_name,interface_name,IFNAMSIZ - 1);
+	
+	if (ioctl(sfd, SIOCGIFINDEX, &if_req1) < 0) {
+	    perror("ioctl SIOCGIFINDEX");
 	}
-	char buff[65536];
-	memset(buff,0,sizeof buff);
-	while(1){
-		int sz = recvfrom(sfd,buff,sizeof buff,0,NULL,NULL);
-		if(sz < 0){
-			perror("recvfrom ");
-		}else{
-			printPacket(buff);
+
+	if (ioctl(sfd, SIOCGIFHWADDR, &if_req2) < 0) {
+	    perror("ioctl SIOCGIFHWADDR");
+	}
+
+	if (ioctl(sfd, SIOCGIFADDR, &if_req3) < 0) {
+	    perror("ioctl SIOCGIFADDR");
+	}
+	
+	printf("Index of %s : %d\n",interface_name,if_req1.ifr_ifindex);
+	printf("Hardware Address of %s : ",interface_name);
+	for(int i=0;i<6;i++){
+		printf("%.2X",if_req2.ifr_hwaddr.sa_data[i]);
+		if(i<5){
+			printf("-");
 		}
 	}
+	printf("\n");
+	
+	printf("IP Address of %s : %s\n ",interface_name,inet_ntoa((((struct sockaddr_in *)&(if_req3.ifr_addr))->sin_addr)));
+	
+	//ethernet hdr
+	
+	struct ethhdr* eth = (struct ethhdr*)(buff);
+	
+	for(int i=0;i<6;i++){
+		eth->h_source[i] = (unsigned char)(if_req2.ifr_hwaddr.sa_data[i]);
+	}
+	
+	memcpy(eth->h_dest,ether_aton("08:00:27:21:58:3e"),6);
+	
+	eth->h_proto = htons(ETH_P_IP);
+	
+	total_len += sizeof(struct ethhdr);
+	
+	//ip hdr
+	struct iphdr* ip = (struct iphdr*)(buff + sizeof(struct ethhdr));
+	
+	ip->ihl = 5;
+	ip->version = 4;
+	ip->tos = 0;
+	ip->id = htons(10201);
+	ip->ttl = 64;
+	ip->protocol = 17;
+	ip->saddr = inet_addr(inet_ntoa((((struct sockaddr_in *)&(if_req3.ifr_addr))->sin_addr)));
+	ip->daddr = inet_addr("10.0.2.15"); 
+	total_len += sizeof(struct iphdr);
+	
+	//udp hdr
+	struct udphdr* udp = (struct udphdr*)(buff + sizeof(struct ethhdr) + sizeof(struct iphdr));
+	
+	udp->source = htons(23451);
+	udp->dest = htons(23452);
+	udp->check = 0;
+	total_len += sizeof(struct udphdr);
+	
+	//data field
+	char* msg = "HEYY!";
+	char* data = buff + total_len;
+	memcpy(data,msg,strlen(msg));
+	
+	total_len += strlen(msg);
+	
+	udp->len = htons((total_len - sizeof(struct iphdr) - sizeof(struct ethhdr)));
+	ip->tot_len = htons(total_len - sizeof(struct ethhdr));
+	
+	ip->check = checksum((unsigned short*)(buff + sizeof(struct ethhdr)), (sizeof(struct iphdr)/2));
+	
+	printPacket(buff);
+	
+	struct sockaddr_ll sadr_ll;
+	memset(&sadr_ll,0,sizeof sadr_ll);
+	sadr_ll.sll_family = AF_PACKET;
+	sadr_ll.sll_protocol = htons(ETH_P_IP);
+	sadr_ll.sll_ifindex = if_req1.ifr_ifindex;
+	
+	if(bind(sfd,(struct sockaddr *)&sadr_ll, sizeof(struct sockaddr_ll)) == -1){
+		perror("bind ");
+    	}
+    	
+    	while(1){
+		int sz = send(sfd,buff,total_len,0);
+		if(sz < 0){
+			perror("send ");
+		}else if(sz == total_len){
+			printf("send : success\n");
+		}
+		sleep(5);
+	}
+	
+}
+
+int main(){
+	sfd = socket(AF_PACKET,SOCK_RAW,IPPROTO_RAW);
+	if(sfd == -1){
+		perror("socket" );
+	}
+	char buff[1024];
+	memset(buff,0,sizeof buff);
+	
+	sendPacket(buff);
+	
 }
