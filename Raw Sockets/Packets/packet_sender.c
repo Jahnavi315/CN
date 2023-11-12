@@ -12,10 +12,6 @@
 #include<netinet/ether.h>
 #include<linux/if_packet.h>
 
-#define DEST_MAC "08:00:27:21:58:3e"
-#define DEST_IP "10.0.2.255"
-#define LOOPB_MAC "00:00:00:00:00:00"
-#define LOOPB_IP "127.0.0.11"
 
 int sfd;
 
@@ -125,7 +121,7 @@ void sendPacket(char* buff){
 	memset(&if_req2,0,sizeof if_req2);
 	memset(&if_req3,0,sizeof if_req3);
 	
-	char* interface_name = "lo";
+	char* interface_name = "enp0s3";
 	strncpy(if_req1.ifr_name,interface_name,IFNAMSIZ - 1);
 	strncpy(if_req2.ifr_name,interface_name,IFNAMSIZ - 1);
 	strncpy(if_req3.ifr_name,interface_name,IFNAMSIZ - 1);
@@ -173,7 +169,7 @@ void sendPacket(char* buff){
 	
 	ip->ihl = 5;
 	ip->version = 4;
-	ip->tos = 16;
+	ip->tos = 0;
 	ip->id = htons(10201);
 	ip->ttl = 64;
 	ip->protocol = 17;
@@ -212,10 +208,13 @@ void sendPacket(char* buff){
 	if(bind(sfd,(struct sockaddr *)&sadr_ll, sizeof(struct sockaddr_ll)) == -1){
 		perror("bind ");
     	}
-		
-	int sz = send(sfd,buff,strlen(buff),0);
+    	while(1){
+	int sz = send(sfd,buff,total_len,0);
 	if(sz < 0){
 		perror("send ");
+	}else if(sz == total_len){
+		printf("send : success\n");
+	}
 	}
 	
 }
@@ -229,4 +228,5 @@ int main(){
 	memset(buff,0,sizeof buff);
 	
 	sendPacket(buff);
+	
 }
