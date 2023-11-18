@@ -104,7 +104,7 @@ void sendPacket(){
 	
 	if(protocol == 17){
 	
-		udp = (struct udphdr*)(buff + sizeof(struct ethhdr) + sizeof(struct iphdr));
+		udp = (struct udphdr*)(buff + sizeof(struct iphdr));
 	
 		udp->source = htons(23453);
 		udp->dest = htons(23454);
@@ -118,12 +118,12 @@ void sendPacket(){
 	total_len += strlen(msg);
 	
 	if(protocol == 17){
-		udp->len = htons((total_len - sizeof(struct iphdr) - sizeof(struct ethhdr)));
+		udp->len = htons((total_len - sizeof(struct iphdr)));
 	}
 	
-	ip->tot_len = htons(total_len - sizeof(struct ethhdr));
+	ip->tot_len = htons(total_len);
 	
-	ip->check = checksum((unsigned short*)(buff + sizeof(struct ethhdr)), (sizeof(struct iphdr)/2));
+	ip->check = 0;//checksum((unsigned short*)(buff + sizeof(struct ethhdr)), (sizeof(struct iphdr)/2));
 	
 	printIpHdr(ip);
 	if(protocol == 17){
@@ -134,8 +134,7 @@ void sendPacket(){
 		struct sockaddr_in addr;
 		memset(&addr,0,sizeof addr);
 		addr.sin_family = AF_INET;
-		addr.sin_port = htons(23454);
-		addr.sin_addr.s_addr = inet_addr("127.0.6.6");//htonl(INADDR_ANY);
+		addr.sin_addr.s_addr = htonl(INADDR_ANY);
 		int sz = sendto(sfd,buff,total_len,0,(struct sockaddr*)&addr,sizeof addr);
 		if(sz < 0){
 			perror("send ");

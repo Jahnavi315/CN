@@ -49,7 +49,8 @@
 "0" is the index number of the interface on your system.
 "s3" stands for the slot or location of the interface on your system. In this case, it's slot 3.
 15. ifreq is 'interface request', "SIOCGIFINDEX" stands for "Socket I/O Control Get Interface Index."
- 										      
+16.*LAYER-2 : Packet is being sniffed when interface is "lo" ..,only this is happening fine, Packet is not being read by rcvr and if other interface is used its not being sniffed atleast!
+**DIDN'T WORK ON INJECTING TCP PACKETS ON LAYER 2,3!
  										      
  										      
  										      
