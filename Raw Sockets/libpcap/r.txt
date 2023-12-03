@@ -1,0 +1,248 @@
+
+
+Packet capture length : 46
+Packet total length : 46
+
+*******************NETWORK PACKET*******************
+
+********ETHERNET HEADER********
+
+	|-Source Address : 00-00-00-00-00-00
+	|-Destination Address : 00-00-00-00-00-00
+	|-Protocol : 2048
+
+********IP HEADER********
+
+	|-Version : 4
+	|-Internet Header Length : 5 DWORDS or 20 Bytes
+ 	|-Type Of Service : 0
+ 	|-Total Length : 32 Bytes
+ 	|-Identification : 10201
+ 	|-Time To Live : 64
+ 	|-Protocol : 30
+ 	|-Header Checksum : 20168
+ 	|-Source IP : 127.0.0.1
+ 	|-Destination IP : 127.0.6.30
+ 
+********TCP HEADER********
+
+	|-Source Port      : 8888
+	|-Destination Port : 9999
+	|-CRF : 1 
+	|-CAF : 0 
+	|-Final Acknowledgment : 0 
+	|-Data Flag : 0 
+	|-Sender Sequence Number : 0
+	|-Receiver Sequence Number : 0
+	|-Data : 
+
+
+Packet capture length : 46
+Packet total length : 46
+
+*******************NETWORK PACKET*******************
+
+********ETHERNET HEADER********
+
+	|-Source Address : 00-00-00-00-00-00
+	|-Destination Address : 00-00-00-00-00-00
+	|-Protocol : 2048
+
+********IP HEADER********
+
+	|-Version : 4
+	|-Internet Header Length : 5 DWORDS or 20 Bytes
+ 	|-Type Of Service : 0
+ 	|-Total Length : 32 Bytes
+ 	|-Identification : 10201
+ 	|-Time To Live : 64
+ 	|-Protocol : 30
+ 	|-Header Checksum : 20168
+ 	|-Source IP : 127.0.6.30
+ 	|-Destination IP : 127.0.0.1
+ 
+********TCP HEADER********
+
+	|-Source Port      : 9999
+	|-Destination Port : 8888
+	|-CRF : 0 
+	|-CAF : 1 
+	|-Final Acknowledgment : 0 
+	|-Data Flag : 0 
+	|-Sender Sequence Number : 0
+	|-Receiver Sequence Number : 0
+	|-Data : 
+
+
+Packet capture length : 46
+Packet total length : 46
+
+*******************NETWORK PACKET*******************
+
+********ETHERNET HEADER********
+
+	|-Source Address : 00-00-00-00-00-00
+	|-Destination Address : 00-00-00-00-00-00
+	|-Protocol : 2048
+
+********IP HEADER********
+
+	|-Version : 4
+	|-Internet Header Length : 5 DWORDS or 20 Bytes
+ 	|-Type Of Service : 0
+ 	|-Total Length : 32 Bytes
+ 	|-Identification : 10201
+ 	|-Time To Live : 64
+ 	|-Protocol : 30
+ 	|-Header Checksum : 20168
+ 	|-Source IP : 127.0.0.1
+ 	|-Destination IP : 127.0.6.30
+ 
+********TCP HEADER********
+
+	|-Source Port      : 8888
+	|-Destination Port : 9999
+	|-CRF : 0 
+	|-CAF : 0 
+	|-Final Acknowledgment : 1 
+	|-Data Flag : 0 
+	|-Sender Sequence Number : 0
+	|-Receiver Sequence Number : 0
+	|-Data : 
+
+
+Packet capture length : 52
+Packet total length : 52
+
+*******************NETWORK PACKET*******************
+
+********ETHERNET HEADER********
+
+	|-Source Address : 00-00-00-00-00-00
+	|-Destination Address : 00-00-00-00-00-00
+	|-Protocol : 2048
+
+********IP HEADER********
+
+	|-Version : 4
+	|-Internet Header Length : 5 DWORDS or 20 Bytes
+ 	|-Type Of Service : 0
+ 	|-Total Length : 38 Bytes
+ 	|-Identification : 10201
+ 	|-Time To Live : 64
+ 	|-Protocol : 30
+ 	|-Header Checksum : 20162
+ 	|-Source IP : 127.0.0.1
+ 	|-Destination IP : 127.0.6.30
+ 
+********TCP HEADER********
+
+	|-Source Port      : 8888
+	|-Destination Port : 9999
+	|-CRF : 0 
+	|-CAF : 0 
+	|-Final Acknowledgment : 0 
+	|-Data Flag : 1 
+	|-Sender Sequence Number : 6
+	|-Receiver Sequence Number : 0
+	|-Data : HELLO!
+
+
+Packet capture length : 52
+Packet total length : 52
+
+*******************NETWORK PACKET*******************
+
+********ETHERNET HEADER********
+
+	|-Source Address : 00-00-00-00-00-00
+	|-Destination Address : 00-00-00-00-00-00
+	|-Protocol : 2048
+
+********IP HEADER********
+
+	|-Version : 4
+	|-Internet Header Length : 5 DWORDS or 20 Bytes
+ 	|-Type Of Service : 0
+ 	|-Total Length : 38 Bytes
+ 	|-Identification : 10201
+ 	|-Time To Live : 64
+ 	|-Protocol : 30
+ 	|-Header Checksum : 20162
+ 	|-Source IP : 127.0.6.30
+ 	|-Destination IP : 127.0.0.1
+ 
+********TCP HEADER********
+
+	|-Source Port      : 9999
+	|-Destination Port : 8888
+	|-CRF : 0 
+	|-CAF : 0 
+	|-Final Acknowledgment : 0 
+	|-Data Flag : 1 
+	|-Sender Sequence Number : 6
+	|-Receiver Sequence Number : 38
+	|-Data : HELLO!
+
+
+Packet capture length : 52
+Packet total length : 52
+
+*******************NETWORK PACKET*******************
+
+********ETHERNET HEADER********
+
+	|-Source Address : 00-00-00-00-00-00
+	|-Destination Address : 00-00-00-00-00-00
+	|-Protocol : 2048
+
+********IP HEADER********
+
+	|-Version : 4
+	|-Internet Header Length : 5 DWORDS or 20 Bytes
+ 	|-Type Of Service : 0
+ 	|-Total Length : 38 Bytes
+ 	|-Identification : 10201
+ 	|-Time To Live : 64
+ 	|-Protocol : 30
+ 	|-Header Checksum : 20162
+ 	|-Source IP : 127.0.0.1
+ 	|-Destination IP : 127.0.6.30
+ 
+********TCP HEADER********
+
+	|-Source Port      : 8888
+	|-Destination Port : 9999
+	|-CRF : 0 
+	|-CAF : 0 
+	|-Final Acknowledgment : 0 
+	|-Data Flag : 1 
+	|-Sender Sequence Number : 6
+	|-Receiver Sequence Number : 0
+	|-Data : HELLO!
+
+
+Packet capture length : 52
+Packet total length : 52
+
+*******************NETWORK PACKET*******************
+
+********ETHERNET HEADER********
+
+	|-Source Address : 00-00-00-00-00-00
+	|-Destination Address : 00-00-00-00-00-00
+	|-Protocol : 2048
+
+********IP HEADER********
+
+	|-Version : 4
+	|-Internet Header Length : 5 DWORDS or 20 Bytes
+ 	|-Type Of Service : 0
+ 	|-Total Length : 38 Bytes
+ 	|-Identification : 10201
+ 	|-Time To Live : 64
+ 	|-Protocol : 30
+ 	|-Header Checksum : 20162
+ 	|-Source IP : 127.0.6.30
+ 	|-Destination IP : 127.0.0.1
+ 

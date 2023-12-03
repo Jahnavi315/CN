@@ -18,6 +18,31 @@
 #include<sys/wait.h>
 #include<unistd.h>
 
+struct mytcphdr{
+	uint16_t source_port;        
+    	uint16_t dest_port;     
+    	uint8_t crf;
+    	uint8_t caf;
+    	uint8_t final_ack;
+    	uint8_t data;     
+    	uint16_t ssn;       
+    	uint16_t rsn;
+};
+
+void printMyTcpHdr(struct mytcphdr* tcp){
+	
+    	printf("\n********TCP HEADER********\n\n");
+    	printf("\t|-Source Port      : %u\n",ntohs(tcp->source_port));
+    	printf("\t|-Destination Port : %u\n",ntohs(tcp->dest_port));
+    	printf("\t|-CRF : %d \n",(unsigned int)tcp->crf);
+    	printf("\t|-CAF : %d \n",(unsigned int)tcp->caf);
+    	printf("\t|-Final Acknowledgment : %d \n",(unsigned int)tcp->final_ack);
+    	printf("\t|-Data Flag : %d \n",(unsigned int)tcp->data);
+    	printf("\t|-Sender Sequence Number : %u\n",ntohs(tcp->ssn));
+    	printf("\t|-Receiver Sequence Number : %u\n",ntohs(tcp->rsn));
+        
+}
+
 void printUdpHdr(struct udphdr* udp){
 
 	printf("\n********UDP HEADER********\n\n");
@@ -25,6 +50,26 @@ void printUdpHdr(struct udphdr* udp){
 	printf("\t|-Destination Port : %d\n", ntohs(udp->dest));
 	printf("\t|-UDP Length : %d\n" , ntohs(udp->len));
 	printf("\t|-UDP Checksum : %d\n" , ntohs(udp->check));
+}
+
+void printTcpHdr(struct tcphdr* tcp){
+	
+    	printf("\n********TCP HEADER********\n\n");
+    	printf("\t|-Source Port      : %u\n",ntohs(tcp->source));
+    	printf("\t|-Destination Port : %u\n",ntohs(tcp->dest));
+    	printf("\t|-Sequence Number    : %u\n",ntohl(tcp->seq));
+    	printf("\t|-Acknowledge Number : %u\n",ntohl(tcp->ack_seq));
+    	printf("\t|-Header Length      : %d DWORDS or %d BYTES\n" ,(unsigned int)tcp->doff,(unsigned int)tcp->doff*4);
+    	printf("\t\t|-Urgent Flag          : %d\n",(unsigned int)tcp->urg);
+    	printf("\t\t|-Acknowledgement Flag : %d\n",(unsigned int)tcp->ack);
+    	printf("\t\t|-Push Flag            : %d\n",(unsigned int)tcp->psh);
+    	printf("\t\t|-Reset Flag           : %d\n",(unsigned int)tcp->rst);
+    	printf("\t\t|-Synchronise Flag     : %d\n",(unsigned int)tcp->syn);
+    	printf("\t\t|-Finish Flag          : %d\n",(unsigned int)tcp->fin);
+    	printf("\t|-Window         : %d\n",ntohs(tcp->window));
+    	printf("\t|-Checksum       : %d\n",ntohs(tcp->check));
+    	printf("\t|-Urgent Pointer : %d\n",tcp->urg_ptr);
+        
 }
 
 void printTcpHdr(struct tcphdr* tcp){
@@ -116,6 +161,14 @@ void printPacket(char* buff){
 			
 			char* data = buff + sizeof(struct ethhdr) + iphdrlen + sizeof(struct udphdr);
 			printf("\t|-Data : %s\n",data);
+			
+		}else if(ip->protocol == 30){
+			
+			struct mytcphdr* tcp =(struct mytcphdr*)(buff + sizeof(struct ethhdr) + iphdrlen);
+			printMyTcpHdr(tcp);
+			char* data = buff + sizeof(struct ethhdr) + iphdrlen + sizeof(struct mytcphdr);
+			printf("\t|-Data : %s\n",data);
+			
 		}
 	}else if(ntohs(eth->h_proto) == ETH_P_ARP){
 		struct ether_arp *arpHdr=(struct ether_arp*)(buff+sizeof(struct ethhdr));
@@ -124,6 +177,7 @@ void printPacket(char* buff){
 }
 
 void print_packet_info(const u_char *packet, struct pcap_pkthdr packet_header) {
+
     printf("\n\nPacket capture length : %d\n", packet_header.caplen);
     printf("Packet total length : %d\n", packet_header.len);
     printPacket((char*)packet);;
@@ -151,7 +205,7 @@ int main(int argc, char *argv[]) {
         return 1;
     }*/
     
-    device = "enp0s3";
+    device = "lo";
 
     /* Open device for live capture */
     handle = pcap_open_live(
