@@ -96,8 +96,8 @@ void sendPacket(){
 	scanf("%d",&protocol);
 	ip->protocol = protocol;
 	
-	ip->saddr = inet_addr("127.0.0.1");
-	ip->daddr = inet_addr("127.0.6.6"); 
+	ip->saddr = inet_addr("192.168.165.230");
+	ip->daddr = inet_addr("192.168.165.184"); 
 	total_len += sizeof(struct iphdr);
 	
 	struct udphdr* udp;
@@ -123,7 +123,7 @@ void sendPacket(){
 	
 	ip->tot_len = htons(total_len);
 	
-	ip->check = 0;//checksum((unsigned short*)(buff + sizeof(struct ethhdr)), (sizeof(struct iphdr)/2));
+	ip->check = checksum((unsigned short*)(buff + sizeof(struct ethhdr)), (sizeof(struct iphdr)/2));
 	
 	printIpHdr(ip);
 	if(protocol == 17){

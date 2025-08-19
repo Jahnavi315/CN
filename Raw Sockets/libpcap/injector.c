@@ -21,8 +21,8 @@
 //connected to my mobile hotspot(router), so the IPs change when we switch to other network
 char* src_mac_str = "08:00:27:21:58:3E"; //MY UBUNTU MAC
 char* dest_mac_str = "FF:FF:FF:FF:FF:FF";//BROADCAST
-char* src_ip_str = "192.168.173.183";//GATEWAY'S IP (SPOOFING AS MINE - MY IP : 192.169.173.230)
-char* dest_ip_str = "192.168.173.70";//"192.168.173.70";//WINDOWS' IP
+char* src_ip_str = "192.168.160.235";//GATEWAY'S IP (SPOOFING AS MINE - MY IP : 192.169.173.230)
+char* dest_ip_str = "192.168.160.70";//"192.168.173.70";//WINDOWS' IP
 
 //1. ARP PACKET FIRST GOES TO ROUTER 
 //2. ROUTER CHECKS THAT ITS IP IS NOT THE SAME AS DESTINATION IP IN THE PACKET
